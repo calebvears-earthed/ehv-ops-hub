@@ -1,0 +1,26 @@
+{
+  "name": "EHV Ops Hub",
+  "short_name": "OpsHub",
+  "description": "Earthed High Voltage — Personal & Business Operations Engine",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1B4332",
+  "background_color": "#F8F7F4",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en-AU"
+}

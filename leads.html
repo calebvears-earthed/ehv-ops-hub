@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1B4332">
+  <title>Leads — EHV Ops Hub</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Leads module */
+    .ld-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      gap: 24px;
+    }
+    .ld-hero-left .ld-eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: .25em;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .ld-hero-left h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--charcoal);
+      letter-spacing: -.01em;
+    }
+    .ld-hero-right { display: flex; gap: 8px; }
+    .ld-btn {
+      padding: 10px 14px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--charcoal);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .ld-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .ld-btn-primary { background: var(--purple); color: white; border-color: var(--purple); }
+    .ld-btn-primary:hover { background: #5b1ed4; color: white; }
+
+    /* Stats */
+    .ld-stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .ld-stat {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+    .ld-stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .ld-stat-value {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+    }
+    .ld-stat-sub {
+      font-size: var(--text-xs);
+      color: var(--muted);
+    }
+
+    /* Connection panel */
+    .ld-connect {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .ld-connect.connected { border-left-color: var(--success); }
+    .ld-connect-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .ld-connect-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--charcoal);
+    }
+    .ld-connect-state {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .2em;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .ld-state-disconnected { background: var(--amber-tint); color: var(--amber-dim); }
+    .ld-state-connected { background: var(--success-tint); color: var(--success); }
+    .ld-connect-desc {
+      font-size: var(--text-sm);
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+    .ld-connect-form {
+      display: flex;
+      gap: 8px;
+    }
+    .ld-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--border-light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--charcoal);
+    }
+
+    /* Table + cards */
+    .ld-table-wrap {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .ld-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-sm);
+    }
+    .ld-table thead {
+      background: var(--border-light);
+      border-bottom: 1px solid var(--border);
+    }
+    .ld-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .15em;
+      color: var(--purple);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .ld-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--charcoal);
+      vertical-align: top;
+    }
+    .ld-table tr:last-child td { border-bottom: 0; }
+    .ld-table tr:hover { background: var(--border-light); cursor: pointer; }
+    .ld-name { font-weight: 700; }
+    .ld-meta { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
+    .ld-when {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--muted);
+      letter-spacing: .05em;
+    }
+    .ld-pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .ld-status-new { background: rgba(124,58,237,.1); color: var(--purple); }
+    .ld-status-contacted { background: rgba(13,148,136,.1); color: #0D9488; }
+    .ld-status-quoted { background: var(--amber-tint); color: var(--amber-dim); }
+    .ld-status-won { background: var(--success-tint); color: var(--success); }
+    .ld-status-lost { background: rgba(220,38,38,.08); color: var(--danger); }
+
+    /* Empty state */
+    .ld-empty {
+      text-align: center;
+      padding: 60px 30px;
+    }
+    .ld-empty-icon {
+      font-size: 38px;
+      color: var(--purple);
+      opacity: .5;
+      margin-bottom: 14px;
+    }
+    .ld-empty-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+    .ld-empty-desc {
+      font-size: var(--text-sm);
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 440px;
+      margin: 0 auto 18px;
+    }
+
+    @media (max-width: 1100px) {
+      .ld-stats { grid-template-columns: repeat(2, 1fr); }
+      .ld-table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar"></div>
+    <div id="main-area">
+      <div id="offline-banner" class="offline-banner">You're offline — showing cached data</div>
+      <div id="topbar"></div>
+      <div id="content"></div>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+
+  <script src="js/data-service.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════
+       EHV OPS HUB — Leads Module
+       Live IG → walkthrough → Formspree → triage
+       ═══════════════════════════════════════════════════ */
+
+    const Leads = (() => {
+      const FORMSPREE_FORM_ID = 'xlgybzag';
+      const STORAGE_KEY = 'ee_leads_v1';
+      const TOKEN_KEY = 'ee_formspree_token';
+
+      const STATUS_OPTIONS = ['new', 'contacted', 'quoted', 'won', 'lost'];
+
+      let leads = [];
+
+      function init() {
+        loadLocal();
+        render();
+        // If a token is set, attempt live fetch
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) fetchLive(token);
+      }
+
+      function loadLocal() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          leads = raw ? JSON.parse(raw) : [];
+        } catch (e) { leads = []; }
+      }
+
+      function saveLocal() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+      }
+
+      async function fetchLive(token) {
+        try {
+          const r = await fetch(`https://formspree.io/api/0/forms/${FORMSPREE_FORM_ID}/submissions`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+          });
+          if (!r.ok) {
+            console.warn('Formspree fetch failed:', r.status);
+            return;
+          }
+          const data = await r.json();
+          // Merge submissions into leads keyed by id
+          const incoming = (data.submissions || []).map(s => ({
+            id: s.id || s._id || s.submitted_at,
+            ts: s.submitted_at,
+            name: s['05_name'] || s.name || s.first_name || '',
+            email: s['05_email'] || s.email || '',
+            phone: s['05_phone'] || s.phone || '',
+            bill: s['01_power_bill'] || '',
+            interest: s['02_interest'] || '',
+            roof: s['03_roof'] || '',
+            postcode: s['04_postcode'] || '',
+            status: 'new',
+            notes: '',
+          }));
+          const byId = Object.fromEntries(leads.map(l => [l.id, l]));
+          incoming.forEach(l => {
+            if (byId[l.id]) {
+              // Preserve existing status/notes
+              byId[l.id] = { ...l, status: byId[l.id].status, notes: byId[l.id].notes };
+            } else {
+              byId[l.id] = l;
+            }
+          });
+          leads = Object.values(byId).sort((a, b) => new Date(b.ts) - new Date(a.ts));
+          saveLocal();
+          render();
+        } catch (e) {
+          console.error('Live fetch error:', e);
+        }
+      }
+
+      function saveToken() {
+        const input = document.getElementById('ld-token-input');
+        const token = input.value.trim();
+        if (!token) return;
+        localStorage.setItem(TOKEN_KEY, token);
+        fetchLive(token);
+        render();
+      }
+
+      function disconnect() {
+        localStorage.removeItem(TOKEN_KEY);
+        render();
+      }
+
+      function setStatus(id, status) {
+        const lead = leads.find(l => l.id === id);
+        if (lead) { lead.status = status; saveLocal(); render(); }
+      }
+
+      function fmtWhen(ts) {
+        if (!ts) return '—';
+        const d = new Date(ts);
+        const now = new Date();
+        const diffMs = now - d;
+        const mins = Math.floor(diffMs / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        if (days < 7) return `${days}d ago`;
+        return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+      }
+
+      function render() {
+        const content = document.getElementById('content');
+        const token = localStorage.getItem(TOKEN_KEY);
+        const connected = !!token;
+
+        // Stats
+        const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+        const total = leads.length;
+        const today = leads.filter(l => l.ts && new Date(l.ts) >= todayStart).length;
+        const newCount = leads.filter(l => l.status === 'new').length;
+        const quoted = leads.filter(l => l.status === 'quoted').length;
+        const won = leads.filter(l => l.status === 'won').length;
+
+        content.innerHTML = `
+          <div class="ld-hero">
+            <div class="ld-hero-left">
+              <div class="ld-eyebrow">IG → WALKTHROUGH → INBOX</div>
+              <h1>Leads pipeline.</h1>
+            </div>
+            <div class="ld-hero-right">
+              <button class="ld-btn" onclick="window.open('https://earthedenergy.au/walkthrough/', '_blank')">View landing</button>
+              <button class="ld-btn ld-btn-primary" onclick="Leads.refresh()">Refresh</button>
+            </div>
+          </div>
+
+          <div class="ld-stats">
+            <div class="ld-stat">
+              <div class="ld-stat-label">Total leads</div>
+              <div class="ld-stat-value" style="color: var(--purple);">${total}</div>
+              <div class="ld-stat-sub">all time</div>
+            </div>
+            <div class="ld-stat">
+              <div class="ld-stat-label">Today</div>
+              <div class="ld-stat-value" style="color: var(--amber);">${today}</div>
+              <div class="ld-stat-sub">since midnight</div>
+            </div>
+            <div class="ld-stat">
+              <div class="ld-stat-label">Untriaged</div>
+              <div class="ld-stat-value" style="color: var(--charcoal);">${newCount}</div>
+              <div class="ld-stat-sub">need a call</div>
+            </div>
+            <div class="ld-stat">
+              <div class="ld-stat-label">Quoted</div>
+              <div class="ld-stat-value" style="color: var(--amber-dim);">${quoted}</div>
+              <div class="ld-stat-sub">awaiting decision</div>
+            </div>
+            <div class="ld-stat">
+              <div class="ld-stat-label">Won</div>
+              <div class="ld-stat-value" style="color: var(--success);">${won}</div>
+              <div class="ld-stat-sub">${total > 0 ? Math.round(won/total*100) : 0}% conversion</div>
+            </div>
+          </div>
+
+          <div class="ld-connect ${connected ? 'connected' : ''}">
+            <div class="ld-connect-head">
+              <div class="ld-connect-title">Formspree connection</div>
+              <span class="ld-connect-state ${connected ? 'ld-state-connected' : 'ld-state-disconnected'}">${connected ? 'CONNECTED' : 'NOT CONNECTED'}</span>
+            </div>
+            <div class="ld-connect-desc">
+              ${connected
+                ? `Pulling live submissions from Formspree form <strong>${FORMSPREE_FORM_ID}</strong>. Submissions are auto-synced every refresh and stored locally for offline triage.`
+                : `Paste your Formspree API token below to pull live submissions. Get one at <strong>formspree.io → Settings → API token</strong>. Stored locally in your browser only — never sent anywhere else.`}
+            </div>
+            ${connected
+              ? `<button class="ld-btn" onclick="Leads.disconnect()">Disconnect</button>`
+              : `<div class="ld-connect-form">
+                  <input id="ld-token-input" class="ld-input" type="password" placeholder="Paste Formspree API token (starts with...)">
+                  <button class="ld-btn ld-btn-primary" onclick="Leads.saveToken()">Connect</button>
+                </div>`
+            }
+          </div>
+
+          <div class="ld-table-wrap">
+            ${leads.length === 0 ? renderEmpty() : renderTable()}
+          </div>
+        `;
+      }
+
+      function renderEmpty() {
+        return `
+          <div class="ld-empty">
+            <div class="ld-empty-icon">◐</div>
+            <div class="ld-empty-title">No leads yet.</div>
+            <div class="ld-empty-desc">When someone submits the walkthrough form on <strong>earthedenergy.au/walkthrough/</strong> they'll land here. Connect Formspree above to pull live, or test by submitting the form yourself.</div>
+            <button class="ld-btn ld-btn-primary" onclick="window.open('https://earthedenergy.au/walkthrough/', '_blank')">Open walkthrough →</button>
+          </div>
+        `;
+      }
+
+      function renderTable() {
+        return `
+          <table class="ld-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Interest</th>
+                <th>Bill</th>
+                <th>Roof</th>
+                <th>Postcode</th>
+                <th>When</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leads.map(l => `
+                <tr>
+                  <td>
+                    <div class="ld-name">${l.name || '—'}</div>
+                  </td>
+                  <td>
+                    <div>${l.email || '—'}</div>
+                    <div class="ld-meta">${l.phone || ''}</div>
+                  </td>
+                  <td>${l.interest || '—'}</td>
+                  <td>${l.bill || '—'}</td>
+                  <td>${l.roof || '—'}</td>
+                  <td>${l.postcode || '—'}</td>
+                  <td class="ld-when">${fmtWhen(l.ts)}</td>
+                  <td>
+                    <select onchange="Leads.setStatus('${l.id}', this.value)" style="background: transparent; border: 1px solid var(--border); border-radius: 12px; padding: 4px 8px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .15em; font-weight: 700; text-transform: uppercase; color: var(--charcoal);">
+                      ${STATUS_OPTIONS.map(s => `<option value="${s}" ${l.status === s ? 'selected' : ''}>${s.toUpperCase()}</option>`).join('')}
+                    </select>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function refresh() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) fetchLive(token);
+        else render();
+      }
+
+      return { init, saveToken, disconnect, setStatus, refresh };
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (DataService && DataService.isFirstRun && DataService.isFirstRun()) {
+        window.location.href = 'settings.html?setup=1';
+        return;
+      }
+      Nav.init('leads');
+      if (typeof Notifications !== 'undefined') Notifications.init();
+      Leads.init();
+    });
+  </script>
+</body>
+</html>

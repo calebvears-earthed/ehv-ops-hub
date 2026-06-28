@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1B4332">
+  <title>Strategy — EHV Ops Hub</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Strategy module */
+    .st-hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .st-hero .st-eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: .25em;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .st-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 32px;
+      color: var(--charcoal);
+      letter-spacing: -.01em;
+      margin-bottom: 12px;
+    }
+    .st-hero p {
+      font-size: var(--text-sm);
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 720px;
+    }
+
+    .st-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+    .st-stat {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-align: center;
+    }
+    .st-stat-value {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .st-stat-label {
+      font-size: var(--text-xs);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 600;
+    }
+
+    .st-section-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      color: var(--charcoal);
+      margin: 32px 0 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .st-section-title .st-section-num {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: .25em;
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    /* MODULE INVENTORY GRID */
+    .st-module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .st-mod {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      transition: all var(--transition);
+    }
+    .st-mod:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
+    .st-mod-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .st-mod-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--charcoal);
+    }
+    .st-mod-status {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .st-mod-live {
+      background: var(--success-tint);
+      color: var(--success);
+    }
+    .st-mod-building {
+      background: var(--amber-tint);
+      color: var(--amber-dim);
+    }
+    .st-mod-planned {
+      background: rgba(124,58,237,.1);
+      color: var(--purple);
+    }
+    .st-mod-desc {
+      font-size: var(--text-xs);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* PHASE ROADMAP */
+    .st-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .st-phase {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+    }
+    .st-phase-tag {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: .22em;
+      color: var(--purple);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .st-phase-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+    .st-phase-when {
+      font-size: var(--text-xs);
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .st-phase-list { list-style: none; padding: 0; }
+    .st-phase-list li {
+      font-size: var(--text-sm);
+      color: var(--charcoal);
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+      padding-left: 14px;
+    }
+    .st-phase-list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--purple);
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .st-phase-list li:last-child { border-bottom: 0; }
+
+    /* AUDIENCE LANES */
+    .st-audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .st-audience {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .st-audience-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .18em;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .audience-1 { background: rgba(124,58,237,.1); color: var(--purple); }
+    .audience-2 { background: var(--amber-tint); color: var(--amber-dim); }
+    .audience-3 { background: var(--success-tint); color: var(--success); }
+    .st-audience-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+    .st-audience-desc {
+      font-size: var(--text-sm);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* MONETISATION */
+    .st-money-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .st-money {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+    }
+    .st-money-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .st-money-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      color: var(--charcoal);
+    }
+    .st-money-value {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      letter-spacing: .05em;
+      color: var(--success);
+      font-weight: 700;
+    }
+    .st-money-desc {
+      font-size: var(--text-sm);
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+    .st-money-meta {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: .1em;
+      color: var(--purple);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* PRINCIPLES PANEL */
+    .st-principles {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-top: 12px;
+    }
+    .st-principles-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; }
+    .st-principle {
+      padding-left: 14px;
+      border-left: 2px solid var(--purple);
+    }
+    .st-principle-head {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--charcoal);
+      margin-bottom: 4px;
+    }
+    .st-principle-body {
+      font-size: var(--text-xs);
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1100px) {
+      .st-stats { grid-template-columns: repeat(2, 1fr); }
+      .st-module-grid { grid-template-columns: repeat(2, 1fr); }
+      .st-phases { grid-template-columns: 1fr; }
+      .st-audience-grid { grid-template-columns: 1fr; }
+      .st-money-grid { grid-template-columns: 1fr; }
+      .st-principles-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar"></div>
+    <div id="main-area">
+      <div id="offline-banner" class="offline-banner">You're offline — showing cached data</div>
+      <div id="topbar"></div>
+      <div id="content"></div>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+
+  <script src="js/data-service.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════
+       EHV OPS HUB — Strategy Module
+       Locked strategic map · vision · phases · monetisation
+       ═══════════════════════════════════════════════════ */
+
+    const Strategy = (() => {
+
+      // MODULE INVENTORY
+      const MODULES = [
+        { name: 'Morning Ritual', status: 'live', desc: 'Daily kickoff — weather, calendar, priorities, training, intentions.' },
+        { name: 'Task Engine', status: 'live', desc: 'Universal task list — every commitment from every channel, in one rail.' },
+        { name: 'Finance', status: 'live', desc: 'Cashflow, BAS prep, owner draws, business + personal ledger split.' },
+        { name: 'Energy', status: 'live', desc: 'EE Co pipeline, proposals, market intel, document library.' },
+        { name: 'Calendar', status: 'live', desc: 'MS365 + Google sync, job blocks, training blocks, deep-work blocks.' },
+        { name: 'Health Command', status: 'live', desc: 'Cyborg V1 protocol, peptide stack, training log, recovery.' },
+
+        { name: 'Leads', status: 'building', desc: 'Live IG → landing → form pipeline. Triage in-place, mark Quoted / Won / Lost.' },
+        { name: 'Strategy', status: 'building', desc: 'This page — locked vision + phase roadmap + monetisation lanes.' },
+        { name: 'HSEQ Register', status: 'planned', desc: '46-doc HSEQ library, review cycles, training matrix, compliance flags.' },
+
+        { name: 'Document Engine', status: 'planned', desc: 'Master doc system — proposals, SWMS, contracts, generated from templates.' },
+        { name: 'EHV Pipeline', status: 'planned', desc: 'HV/cable jointing job pipeline — Nyrstar, SAPN, Enerven, TEC, Infrapower.' },
+        { name: 'Fleet & Plant', status: 'planned', desc: 'Vehicle + plant register, services due, registration, branded asset tracking.' },
+
+        { name: 'Compliance & Renewals', status: 'planned', desc: 'Licences, accreditations, insurances, expiry alerts, lodgement tracker.' },
+        { name: 'Marketing Studio', status: 'planned', desc: 'Higgsfield ad gen, Meta ads dashboard, social posts, performance metrics.' },
+        { name: 'Arc Brain', status: 'planned', desc: 'Centralised memory, scheduled tasks, voice triggers, full-context assist.' },
+      ];
+
+      // PHASES
+      const PHASES = [
+        {
+          tag: 'PHASE 01',
+          name: 'Single-tenant HTML hub',
+          when: 'Now → August 2026',
+          items: [
+            'Finish Leads + Marketing Studio modules',
+            'Wire Formspree + Higgsfield + IG ads to dashboards',
+            'Add HSEQ Register, Compliance Renewals, Fleet & Plant',
+            'Mac mini infrastructure for persistent shell + scheduled tasks',
+          ]
+        },
+        {
+          tag: 'PHASE 02',
+          name: 'Next.js rebuild · multi-tenant',
+          when: 'August → November 2026',
+          items: [
+            'Next.js 14 + TypeScript + Tailwind + Supabase foundation',
+            'Auth + tenant isolation + Stripe billing',
+            'Migrate modules with real Postgres data layer',
+            'BYOK Claude API integration · users bring their own key',
+            'White-label theme tokens · logo + colour + font customisation',
+          ]
+        },
+        {
+          tag: 'PHASE 03',
+          name: 'PWA → App Store launch',
+          when: 'November → February 2027',
+          items: [
+            'PWA wrapper · installable on iOS + Android home screen',
+            'Capacitor native wrappers · App Store + Play Store listings',
+            'Onboarding wizard · first-run setup + plugin marketplace',
+            'Open beta to other trade businesses (sparkies, plumbers, solar)',
+            'First 100 paying customers · subscription revenue live',
+          ]
+        },
+      ];
+
+      // AUDIENCE LANES
+      const AUDIENCES = [
+        {
+          tag: 'INTERNAL · OPERATOR',
+          tagClass: 'audience-1',
+          name: 'Caleb (you)',
+          desc: 'Solo operator running EHV + EE Co + Purple Earth in parallel. Needs total visibility across cash, jobs, leads, compliance, training, and health — without context-switching between 12 apps. The Ops Hub is your command centre.'
+        },
+        {
+          tag: 'INTERNAL · TEAM',
+          tagClass: 'audience-2',
+          name: 'Troy + future crew',
+          desc: 'Field operators executing jobs. Need a stripped-down mobile view — today\'s jobs, today\'s tasks, time entry, photo capture, compliance check. Same data layer, different lens.'
+        },
+        {
+          tag: 'EXTERNAL · SAAS',
+          tagClass: 'audience-3',
+          name: 'White-label trade businesses',
+          desc: 'Other Australian trade shops (sparkies, plumbers, builders, solar installers). They want what you have. They subscribe, set up their own tenant, bring their own Claude API key, pay $49-149/mo. App Store distribution by Phase 3.'
+        },
+      ];
+
+      // MONETISATION
+      const MONEY = [
+        {
+          name: 'Internal leverage',
+          value: 'Save 10-20 hrs/week',
+          desc: 'The Hub frees up your time from admin sludge. Every hour saved compounds into more billable HV work or more proposal volume. Hidden revenue.',
+          meta: 'PHASE 1 · LIVE NOW'
+        },
+        {
+          name: 'Proposal velocity',
+          value: '2-3× quote throughput',
+          desc: 'Proposals, contracts, compliance docs all generated from templates. Cuts proposal time from 4 hrs → 30 min. More quotes out = more deals closed.',
+          meta: 'PHASE 1 · BUILDING'
+        },
+        {
+          name: 'SaaS subscription',
+          value: '$49-149/mo per business',
+          desc: 'Other trade businesses pay monthly to use the Ops Hub. BYO Claude API key removes liability. Target 100 customers → $5-15k/mo recurring within 18 months of launch.',
+          meta: 'PHASE 3 · BUSINESS MODEL'
+        },
+        {
+          name: 'White-label licence',
+          value: '$10-30k one-off',
+          desc: 'Larger trade groups (franchise networks, RTOs, equipment OEMs) licence a branded version for their installer network. High-ticket, low-volume revenue lane.',
+          meta: 'PHASE 3 · ENTERPRISE LANE'
+        },
+      ];
+
+      // PRINCIPLES
+      const PRINCIPLES = [
+        { head: 'Boutique by choice.', body: 'Built for solo operators and tight crews. Never bloated to enterprise feature creep.' },
+        { head: 'Compliance built in.', body: 'HSEQ, SWMS, accreditations, renewals — woven into workflows, not bolted on at audit time.' },
+        { head: 'AI-native from day one.', body: 'Arc lives inside the Hub. Every flow assumes Claude is in the loop, not as a chatbot but as an operator.' },
+        { head: 'BYO Claude key.', body: 'SaaS users bring their own API key. Removes liability, aligns incentives, scales without us covering token costs.' },
+        { head: 'Real data only.', body: 'No demo content. If we don\'t have the number, the field stays editable. Numbers shown are facts, not placeholders.' },
+        { head: 'Dark premium aesthetic.', body: 'Paolumu v3 design system. Cream + serif for customer-facing, dark purple for internal. Looks like a command centre, not a CRM.' },
+      ];
+
+      function init() { render(); }
+
+      function render() {
+        const content = document.getElementById('content');
+
+        const liveCount = MODULES.filter(m => m.status === 'live').length;
+        const buildingCount = MODULES.filter(m => m.status === 'building').length;
+        const plannedCount = MODULES.filter(m => m.status === 'planned').length;
+        const totalCount = MODULES.length;
+
+        content.innerHTML = `
+          <!-- HERO -->
+          <div class="st-hero">
+            <div class="st-eyebrow">OPS HUB · STRATEGIC MAP · 27 JUN 2026</div>
+            <h1>The brain behind the business.</h1>
+            <p>This is the locked roadmap for the Earthed Ops Hub. What it does today, what it becomes next, who it serves, and how it pays. Three phases. Three audiences. Four revenue lanes. Built once, leveraged forever — first internally, then sold.</p>
+          </div>
+
+          <!-- STATS -->
+          <div class="st-stats">
+            <div class="st-stat">
+              <div class="st-stat-value" style="color: var(--success);">${liveCount}</div>
+              <div class="st-stat-label">Modules Live</div>
+            </div>
+            <div class="st-stat">
+              <div class="st-stat-value" style="color: var(--amber);">${buildingCount}</div>
+              <div class="st-stat-label">Building Now</div>
+            </div>
+            <div class="st-stat">
+              <div class="st-stat-value" style="color: var(--purple);">${plannedCount}</div>
+              <div class="st-stat-label">Planned</div>
+            </div>
+            <div class="st-stat">
+              <div class="st-stat-value" style="color: var(--charcoal);">${totalCount}</div>
+              <div class="st-stat-label">Total Surface</div>
+            </div>
+          </div>
+
+          <!-- MODULE INVENTORY -->
+          <div class="st-section-title"><span class="st-section-num">01</span>Module inventory</div>
+          <div class="st-module-grid">
+            ${MODULES.map(m => `
+              <div class="st-mod">
+                <div class="st-mod-head">
+                  <div class="st-mod-name">${m.name}</div>
+                  <span class="st-mod-status st-mod-${m.status}">${m.status.toUpperCase()}</span>
+                </div>
+                <div class="st-mod-desc">${m.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- PHASE ROADMAP -->
+          <div class="st-section-title"><span class="st-section-num">02</span>Phase roadmap</div>
+          <div class="st-phases">
+            ${PHASES.map(p => `
+              <div class="st-phase">
+                <div class="st-phase-tag">${p.tag}</div>
+                <div class="st-phase-name">${p.name}</div>
+                <div class="st-phase-when">${p.when}</div>
+                <ul class="st-phase-list">
+                  ${p.items.map(i => `<li>${i}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- AUDIENCE LANES -->
+          <div class="st-section-title"><span class="st-section-num">03</span>Who it's for</div>
+          <div class="st-audience-grid">
+            ${AUDIENCES.map(a => `
+              <div class="st-audience">
+                <span class="st-audience-tag ${a.tagClass}">${a.tag}</span>
+                <div class="st-audience-name">${a.name}</div>
+                <div class="st-audience-desc">${a.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- MONETISATION -->
+          <div class="st-section-title"><span class="st-section-num">04</span>Monetisation lanes</div>
+          <div class="st-money-grid">
+            ${MONEY.map(m => `
+              <div class="st-money">
+                <div class="st-money-head">
+                  <div class="st-money-name">${m.name}</div>
+                  <div class="st-money-value">${m.value}</div>
+                </div>
+                <div class="st-money-desc">${m.desc}</div>
+                <div class="st-money-meta">${m.meta}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- PRINCIPLES -->
+          <div class="st-section-title"><span class="st-section-num">05</span>First principles</div>
+          <div class="st-principles">
+            <div class="st-principles-list">
+              ${PRINCIPLES.map(p => `
+                <div class="st-principle">
+                  <div class="st-principle-head">${p.head}</div>
+                  <div class="st-principle-body">${p.body}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      return { init };
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (DataService && DataService.isFirstRun && DataService.isFirstRun()) {
+        window.location.href = 'settings.html?setup=1';
+        return;
+      }
+      Nav.init('strategy');
+      if (typeof Notifications !== 'undefined') Notifications.init();
+      Strategy.init();
+    });
+  </script>
+</body>
+</html>

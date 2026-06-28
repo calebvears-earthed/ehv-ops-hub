@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1B4332">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Finance — EHV Ops Hub</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Finance Module Styles ── */
+    .fin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+    .fin-card {
+      background: var(--surface-card); border-radius: var(--radius-lg);
+      border: 1px solid var(--border); padding: 24px;
+      box-shadow: var(--shadow-sm); transition: box-shadow var(--transition);
+    }
+    .fin-card:hover { box-shadow: var(--shadow-md); }
+    .fin-card.full { grid-column: 1 / -1; }
+
+    .fin-section-label {
+      font-family: var(--font-display); font-size: var(--text-xs);
+      font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+    }
+
+    .fin-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .fin-card-title {
+      font-family: var(--font-display); font-size: var(--text-lg);
+      font-weight: 700; color: var(--charcoal);
+    }
+    .fin-card-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 20px;
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      font-weight: 600; letter-spacing: .02em;
+    }
+    .badge-teal { background: rgba(13,148,136,.1); color: #0D9488; }
+    .badge-amber { background: var(--amber-tint); color: var(--amber-dim); }
+    .badge-green { background: var(--success-tint); color: var(--success); }
+    .badge-red { background: var(--danger-tint); color: var(--danger); }
+    .badge-purple { background: rgba(124,58,237,.08); color: var(--purple); }
+
+    /* Priority items */
+    .fin-priority-list { list-style: none; }
+    .fin-priority-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border-light);
+    }
+    .fin-priority-item:last-child { border-bottom: none; }
+    .fin-priority-rank {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: var(--text-sm);
+      font-weight: 700; flex-shrink: 0;
+    }
+    .rank-do-now { background: var(--danger-tint); color: var(--danger); }
+    .rank-this-q { background: var(--amber-tint); color: var(--amber-dim); }
+    .rank-next-q { background: var(--success-tint); color: var(--success); }
+
+    .fin-priority-content { flex: 1; min-width: 0; }
+    .fin-priority-name {
+      font-family: var(--font-display); font-size: var(--text-base);
+      font-weight: 600; color: var(--charcoal); margin-bottom: 2px;
+    }
+    .fin-priority-desc {
+      font-size: var(--text-sm); color: var(--muted); line-height: 1.5;
+    }
+    .fin-priority-value {
+      font-family: var(--font-mono); font-size: var(--text-sm);
+      font-weight: 600; color: var(--teal); white-space: nowrap;
+    }
+
+    /* Document list */
+    .fin-doc-list { list-style: none; }
+    .fin-doc-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-radius: var(--radius);
+      margin-bottom: 6px; transition: background var(--transition);
+      cursor: pointer; text-decoration: none; color: inherit;
+    }
+    .fin-doc-item:hover { background: var(--green-tint); }
+    .fin-doc-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .icon-pdf { background: rgba(220,38,38,.08); color: var(--danger); }
+    .icon-docx { background: rgba(30,64,175,.08); color: var(--blue); }
+    .icon-xlsx { background: rgba(22,163,74,.08); color: var(--success); }
+    .icon-master { background: rgba(124,58,237,.08); color: var(--purple); }
+
+    .fin-doc-info { flex: 1; min-width: 0; }
+    .fin-doc-name {
+      font-size: var(--text-sm); font-weight: 600; color: var(--charcoal);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fin-doc-meta {
+      font-size: var(--text-xs); color: var(--muted);
+    }
+    .fin-doc-arrow { color: var(--muted-light); font-size: var(--text-sm); }
+
+    /* Stats row */
+    .fin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .fin-stat {
+      background: var(--surface-card); border-radius: var(--radius-lg);
+      border: 1px solid var(--border); padding: 20px;
+      text-align: center;
+    }
+    .fin-stat-value {
+      font-family: var(--font-display); font-size: var(--text-2xl);
+      font-weight: 800; margin-bottom: 4px;
+    }
+    .fin-stat-label {
+      font-size: var(--text-xs); color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em; font-weight: 600;
+    }
+
+    /* Action items */
+    .fin-action-list { list-style: none; }
+    .fin-action-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border-light);
+    }
+    .fin-action-item:last-child { border-bottom: none; }
+    .fin-action-check {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid var(--border); display: flex;
+      align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+      transition: all var(--transition);
+    }
+    .fin-action-check:hover { border-color: var(--teal); background: rgba(13,148,136,.06); }
+    .fin-action-check.done { border-color: var(--success); background: var(--success); color: white; }
+    .fin-action-text { font-size: var(--text-sm); color: var(--charcoal); flex: 1; }
+    .fin-action-text.done { text-decoration: line-through; color: var(--muted-light); }
+    .fin-action-due {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--muted); white-space: nowrap;
+    }
+
+    /* Hidden funding angles */
+    .fin-angle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fin-angle {
+      padding: 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); transition: all var(--transition);
+      cursor: default;
+    }
+    .fin-angle:hover { border-color: var(--teal); box-shadow: var(--shadow-sm); }
+    .fin-angle-title {
+      font-family: var(--font-display); font-size: var(--text-sm);
+      font-weight: 600; color: var(--charcoal); margin-bottom: 4px;
+    }
+    .fin-angle-value {
+      font-family: var(--font-mono); font-size: var(--text-xs);
+      color: var(--teal); margin-bottom: 4px;
+    }
+    .fin-angle-comp {
+      font-size: var(--text-xs); color: var(--muted);
+    }
+
+    /* Tab nav */
+    .fin-tabs { display: flex; gap: 2px; margin-bottom: 24px; background: var(--border-light); border-radius: var(--radius); padding: 3px; }
+    .fin-tab {
+      flex: 1; padding: 10px 16px; border: none; background: transparent;
+      font-family: var(--font-display); font-size: var(--text-sm);
+      font-weight: 600; color: var(--muted); cursor: pointer;
+      border-radius: var(--radius-sm); transition: all var(--transition);
+    }
+    .fin-tab:hover { color: var(--charcoal); }
+    .fin-tab.active { background: var(--surface-card); color: var(--charcoal); box-shadow: var(--shadow-sm); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .fin-grid { grid-template-columns: 1fr; }
+      .fin-stats { grid-template-columns: repeat(2, 1fr); }
+      .fin-angle-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .fin-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar"></div>
+    <div id="main-area">
+      <div id="offline-banner" class="offline-banner">You're offline — showing cached data</div>
+      <div id="topbar"></div>
+      <div id="content"></div>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+
+  <script src="js/data-service.js"></script>
+  <script src="js/prompts.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/notifications.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════
+       EHV OPS HUB — Finance Module
+       Grants, Funding & Financial Strategy Dashboard
+       ═══════════════════════════════════════════════════ */
+
+    const Finance = (() => {
+      const STORAGE_KEY = 'finance_actions';
+
+      // ── Grant priorities (from research) ──
+      const CONVENTIONAL_GRANTS = [
+        { rank: 1, tier: 'do-now', name: 'Industry Growth Program', body: 'DISR', type: 'Grant', value: '$100K–$5M', status: 'Draft Prepared', action: 'Submit Advisory Services application via business.gov.au' },
+        { rank: 2, tier: 'do-now', name: 'ARENA — Powering the Regions ITS R3', body: 'ARENA', type: 'Grant', value: '$180M pool', status: 'Draft Prepared', action: 'Submit enquiry via ARENA Funding Advice portal' },
+        { rank: 3, tier: 'do-now', name: 'ARENA — FMA Innovation Fund', body: 'ARENA', type: 'Grant', value: 'Up to $1.5B', status: 'Not Started', action: 'Contact ARENA re: Green Metals priority alignment' },
+        { rank: 4, tier: 'do-now', name: 'SA Powering Business Grants R3', body: 'SA Treasury', type: 'Grant', value: '$2.5K–$75K', status: 'Not Started', action: 'Apply at business.sa.gov.au for equipment upgrades' },
+        { rank: 5, tier: 'this-q', name: 'R&D Tax Incentive', body: 'ATO/DISR', type: 'Tax Offset', value: '43.5%', status: 'Not Started', action: 'Engage R&D tax advisor for FY26 claim' },
+        { rank: 6, tier: 'this-q', name: 'CEFC Concessional Finance', body: 'CEFC', type: 'Loan/Equity', value: 'Project-based', status: 'Not Started', action: 'Approach CEFC for growth capital discussion' },
+        { rank: 7, tier: 'this-q', name: 'SA Hydrogen Projects', body: 'SA Gov', type: 'Contracts', value: 'Various', status: 'EOI Prepared', action: 'Submit EOI to SA Energy & Mining' },
+        { rank: 8, tier: 'next-q', name: 'Community Batteries Round 2', body: 'ARENA', type: 'Grant', value: '$46.3M pool', status: 'Not Started', action: 'Partner with battery developers as EPC contractor' },
+      ];
+
+      const HIDDEN_ANGLES = [
+        { name: 'Apprenticeship Stacking', value: '$20K–$25K/ea', comp: 'Almost none', tier: 'do-now' },
+        { name: 'Young Founder Awards', value: 'Credibility ×10', comp: 'Low', tier: 'do-now' },
+        { name: 'First Nations Partnerships', value: '$145M programs', comp: 'Very low', tier: 'do-now' },
+        { name: 'The Aggregator Strategy', value: '$500K–$10M+', comp: 'Medium', tier: 'this-q' },
+        { name: 'Defence Industry Grants', value: '$100K–$1M', comp: 'Very low (HV)', tier: 'this-q' },
+        { name: 'Disaster Resilience Fund', value: '$200M pool', comp: 'Low–Medium', tier: 'this-q' },
+        { name: 'NRF Net Zero Fund', value: '$5B (new fund)', comp: 'Very low', tier: 'next-q' },
+        { name: 'Grid Enhancing Tech', value: 'Up to $5M', comp: 'Medium', tier: 'next-q' },
+        { name: 'Veterans Employment', value: 'Up to $800K', comp: 'Very low', tier: 'next-q' },
+        { name: 'University CRC Partnership', value: '$1M+ (CRC)', comp: 'Low', tier: 'next-q' },
+      ];
+
+      const ACTION_ITEMS = [
+        { id: 'a1', text: 'Submit Advisory Services application to Industry Growth Program', due: 'ASAP' },
+        { id: 'a2', text: 'Submit enquiry to ARENA Funding Advice portal', due: 'ASAP' },
+        { id: 'a3', text: 'Submit EOI to SA Energy & Mining for hydrogen projects', due: 'ASAP' },
+        { id: 'a4', text: 'Apply for SA Powering Business Grants (equipment upgrades)', due: 'ASAP' },
+        { id: 'a5', text: 'Register ARENANet portal account', due: '2 weeks' },
+        { id: 'a6', text: 'Take on clean energy apprentices (stack KAP + state subsidies)', due: '4 weeks' },
+        { id: 'a7', text: 'Nominate for Australian Young Entrepreneur Awards 2026', due: '4 weeks' },
+        { id: 'a8', text: 'Engage R&D Tax Advisor for FY25-26', due: '4 weeks' },
+        { id: 'a9', text: 'Register with First Nations Clean Energy Network', due: '4 weeks' },
+        { id: 'a10', text: 'Register with Office of Defence Industry Support (ODIS)', due: '8 weeks' },
+        { id: 'a11', text: 'Approach CEFC for growth capital discussion', due: '8 weeks' },
+        { id: 'a12', text: 'Set up quarterly grants review process', due: '12 weeks' },
+      ];
+
+      const DOCUMENTS = [
+        { name: 'Grants Master Package', desc: 'Complete 35-page package — all documents combined', icon: 'master', file: 'Earthed Grants Master Package.pdf' },
+        { name: 'Grants & Funding Opportunity Report', desc: 'Full research report — 15+ programs analysed', icon: 'pdf', file: 'Earthed Grants & Funding Opportunity Report.pdf' },
+        { name: 'The Hidden Funding Playbook', desc: '10 unconventional angles your competitors miss', icon: 'pdf', file: 'Earthed Hidden Funding Playbook.pdf' },
+        { name: 'Company Capability Statement', desc: 'Master capability document for all applications', icon: 'pdf', file: 'Earthed Company Capability Statement.pdf' },
+        { name: 'ARENA Email Draft', desc: 'Draft email for ARENA Funding Advice portal', icon: 'docx', file: 'DRAFT — Email to ARENA Funding Advice Portal.docx' },
+        { name: 'SA Hydrogen EOI Draft', desc: 'Expression of Interest for hydrogen projects', icon: 'docx', file: 'DRAFT — EOI SA Hydrogen Projects.docx' },
+        { name: 'Industry Growth Program Letter', desc: 'Draft application cover letter', icon: 'docx', file: 'DRAFT — Industry Growth Program Application Letter.docx' },
+        { name: 'Grants Application Tracker', desc: 'Excel tracker — 15 programs + action plan + contacts', icon: 'xlsx', file: 'Earthed Grants Application Tracker.xlsx' },
+      ];
+
+      function getActionStates() {
+        try {
+          const raw = localStorage.getItem('ehv_' + STORAGE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch { return {}; }
+      }
+
+      function saveActionStates(states) {
+        localStorage.setItem('ehv_' + STORAGE_KEY, JSON.stringify(states));
+      }
+
+      function toggleAction(id) {
+        const states = getActionStates();
+        states[id] = !states[id];
+        saveActionStates(states);
+        render();
+      }
+
+      function init() {
+        render();
+      }
+
+      function render() {
+        const content = document.getElementById('content');
+        const states = getActionStates();
+        const doneCount = Object.values(states).filter(v => v).length;
+
+        content.innerHTML = `
+          <!-- Stats Row -->
+          <div class="fin-stats">
+            <div class="fin-stat">
+              <div class="fin-stat-value" style="color: var(--teal);">15+</div>
+              <div class="fin-stat-label">Programs Identified</div>
+            </div>
+            <div class="fin-stat">
+              <div class="fin-stat-value" style="color: var(--amber);">10</div>
+              <div class="fin-stat-label">Hidden Angles</div>
+            </div>
+            <div class="fin-stat">
+              <div class="fin-stat-value" style="color: var(--success);">${doneCount}/${ACTION_ITEMS.length}</div>
+              <div class="fin-stat-label">Actions Complete</div>
+            </div>
+            <div class="fin-stat">
+              <div class="fin-stat-value" style="color: var(--purple);">8</div>
+              <div class="fin-stat-label">Documents Ready</div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="fin-tabs">
+            <button class="fin-tab active" onclick="Finance.showTab('priorities')">Priorities</button>
+            <button class="fin-tab" onclick="Finance.showTab('hidden')">Hidden Angles</button>
+            <button class="fin-tab" onclick="Finance.showTab('actions')">Action Plan</button>
+            <button class="fin-tab" onclick="Finance.showTab('docs')">Documents</button>
+          </div>
+
+          <div id="fin-tab-content"></div>
+        `;
+
+        showTab('priorities');
+      }
+
+      function showTab(tab) {
+        document.querySelectorAll('.fin-tab').forEach((el, i) => {
+          el.classList.toggle('active', ['priorities','hidden','actions','docs'][i] === tab);
+        });
+
+        const container = document.getElementById('fin-tab-content');
+
+        if (tab === 'priorities') renderPriorities(container);
+        else if (tab === 'hidden') renderHidden(container);
+        else if (tab === 'actions') renderActions(container);
+        else if (tab === 'docs') renderDocs(container);
+      }
+
+      function tierLabel(tier) {
+        if (tier === 'do-now') return '<span class="fin-card-badge badge-red">DO NOW</span>';
+        if (tier === 'this-q') return '<span class="fin-card-badge badge-amber">THIS QUARTER</span>';
+        return '<span class="fin-card-badge badge-green">NEXT QUARTER</span>';
+      }
+
+      function rankClass(tier) {
+        if (tier === 'do-now') return 'rank-do-now';
+        if (tier === 'this-q') return 'rank-this-q';
+        return 'rank-next-q';
+      }
+
+      function renderPriorities(container) {
+        container.innerHTML = `
+          <div class="fin-grid">
+            <div class="fin-card full">
+              <div class="fin-card-header">
+                <div class="fin-card-title">Grant Priorities</div>
+                <span class="fin-card-badge badge-teal">${CONVENTIONAL_GRANTS.length} Programs</span>
+              </div>
+              <ul class="fin-priority-list">
+                ${CONVENTIONAL_GRANTS.map(g => `
+                  <li class="fin-priority-item">
+                    <div class="fin-priority-rank ${rankClass(g.tier)}">${g.rank}</div>
+                    <div class="fin-priority-content">
+                      <div class="fin-priority-name">${g.name} ${tierLabel(g.tier)}</div>
+                      <div class="fin-priority-desc">${g.body} · ${g.type} · ${g.action}</div>
+                    </div>
+                    <div class="fin-priority-value">${g.value}</div>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderHidden(container) {
+        container.innerHTML = `
+          <div class="fin-card full" style="margin-bottom: 24px;">
+            <div class="fin-card-header">
+              <div class="fin-card-title">The Hidden Funding Playbook</div>
+              <span class="fin-card-badge badge-purple">10 Angles</span>
+            </div>
+            <p style="font-size: var(--text-sm); color: var(--muted); margin-bottom: 20px; line-height: 1.6;">
+              Unconventional funding streams your competitors aren't chasing. These tap into defence, disaster resilience,
+              workforce development, First Nations programs, and brand-new funds.
+            </p>
+            <div class="fin-angle-grid">
+              ${HIDDEN_ANGLES.map(a => `
+                <div class="fin-angle">
+                  <div class="fin-angle-title">${a.name} ${tierLabel(a.tier)}</div>
+                  <div class="fin-angle-value">${a.value}</div>
+                  <div class="fin-angle-comp">Competition: ${a.comp}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderActions(container) {
+        const states = getActionStates();
+        container.innerHTML = `
+          <div class="fin-card full" style="margin-bottom: 24px;">
+            <div class="fin-card-header">
+              <div class="fin-card-title">90-Day Action Plan</div>
+              <span class="fin-card-badge badge-teal">${Object.values(states).filter(v=>v).length}/${ACTION_ITEMS.length} done</span>
+            </div>
+            <ul class="fin-action-list">
+              ${ACTION_ITEMS.map(a => {
+                const done = states[a.id] || false;
+                return `
+                  <li class="fin-action-item">
+                    <div class="fin-action-check ${done ? 'done' : ''}" onclick="Finance.toggleAction('${a.id}')">
+                      ${done ? '✓' : ''}
+                    </div>
+                    <span class="fin-action-text ${done ? 'done' : ''}">${a.text}</span>
+                    <span class="fin-action-due">${a.due}</span>
+                  </li>
+                `;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      function renderDocs(container) {
+        container.innerHTML = `
+          <div class="fin-card full" style="margin-bottom: 24px;">
+            <div class="fin-card-header">
+              <div class="fin-card-title">Grants Document Library</div>
+              <span class="fin-card-badge badge-teal">${DOCUMENTS.length} Files</span>
+            </div>
+            <ul class="fin-doc-list">
+              ${DOCUMENTS.map(d => {
+                const iconClass = d.icon === 'master' ? 'icon-master' : d.icon === 'xlsx' ? 'icon-xlsx' : d.icon === 'docx' ? 'icon-docx' : 'icon-pdf';
+                const iconEmoji = d.icon === 'master' ? '📦' : d.icon === 'xlsx' ? '📊' : d.icon === 'docx' ? '📝' : '📄';
+                const ext = d.file.split('.').pop().toUpperCase();
+                return `
+                  <div class="fin-doc-item" title="Open ${d.file}">
+                    <div class="fin-doc-icon ${iconClass}">${iconEmoji}</div>
+                    <div class="fin-doc-info">
+                      <div class="fin-doc-name">${d.name}</div>
+                      <div class="fin-doc-meta">${d.desc} · ${ext}</div>
+                    </div>
+                    <div class="fin-doc-arrow">→</div>
+                  </div>
+                `;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      return { init, showTab, toggleAction };
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (DataService.isFirstRun()) {
+        window.location.href = 'settings.html?setup=1';
+        return;
+      }
+      Nav.init('finance');
+      Notifications.init();
+      Finance.init();
+    });
+  </script>
+</body>
+</html>

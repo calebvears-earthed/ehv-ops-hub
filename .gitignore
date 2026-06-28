@@ -1,0 +1,17 @@
+# Never commit secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Build artifacts
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db

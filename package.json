@@ -1,0 +1,17 @@
+{
+  "name": "earthed-ops-hub",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Earthed Ops Hub — command centre for Earthed High Voltage, Earthed Energy Co, and Purple Earth.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
